@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Document</title>
+    <link rel="stylesheet" href="./app-style.css">
+</head>
+
+<body>
+    <div class="chat-top">
+        <h1>Java Chat</h1>
+    </div>
+
+    <div id="messages">
+        <div class="messages-wrapper">
+            <ul id="messages-list">
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="pol-message">
+        <div id="sendMsg">
+            <input type="text" id="msgTxt" placeholder="ENTER YOUR MESSAGE...">
+            <input type="submit" id="msgBtn" value="send" onclick="window.module.sendMsg()">
+        </div>
+    </div>
+
+    <script src="./app.js"></script>
+    <script>
+        window.module = {}
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, set, remove, onChildAdded, onChildRemoved } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDst_ULdELAsmcDHnIdMbncdMOAqC-AWWw",
+            authDomain: "java-chat-da1c5.firebaseapp.com",
+            projectId: "java-chat-da1c5",
+            storageBucket: "java-chat-da1c5.firebasestorage.app",
+            messagingSenderId: "640579667183",
+            appId: "1:640579667183:web:cc5428e5fb537dca61c71a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let msgTxt = document.getElementById('msgTxt');
+
+        let sender;
+        if (sessionStorage.getItem('sender')) {
+            sender = sessionStorage.getItem('sender');
+        } else {
+            sender = prompt('PLEASE ENTER YOUR NAME');
+            sessionStorage.setItem('sender', sender);
+        }
+
+
+        window.module.sendMsg = function sendMsg() {
+            let msg = msgTxt.value;
+            let timestamp = new Date().getTime();
+
+            if (msg) {
+                set(ref(db, "messages/" + timestamp), {
+                    msg: msg,
+                    sender: sender
+                });
+            }
+        }
+
+        const messagesList = document.querySelector('#messages-list')
+
+        onChildAdded(ref(db, "messages"), (data) => {
+            let sender = sessionStorage.getItem('sender');
+            console.log(data.val().sender + ':' + data.val().msg)
+            messagesList.innerHTML += `<li id="messageText">${data.val().msg}</li>`
+            if (sender == data.val().sender) {
+                const messageText = document.querySelector('#messageText')
+                messageText.classList.add('users-messages')
+            }
+        })
+
+        const messages = document.querySelector('#messages');
+        messages.scrollTop = messages.scrollHeight;
+    </script>
+</body>
+
+</html>
