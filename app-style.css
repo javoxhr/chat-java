@@ -60,10 +60,13 @@ input {
     align-items: center;
     justify-content: center;
     padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
 }
 
 #messages {
-    height: 86vh;
+    height: 95vh;
     padding: 10px 10px 40px;
     border: 1px solid;
     overflow-x: hidden;
@@ -79,7 +82,7 @@ input {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding-bottom: 40px;
+    padding-bottom: 20px;
 }
 
 #messages ul li {
