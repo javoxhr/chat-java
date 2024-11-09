@@ -64,7 +64,7 @@ input {
 }
 
 #messages {
-    height: 90vh;
+    height: 86vh;
     padding: 10px 10px 40px;
     border: 1px solid;
     overflow-x: hidden;
@@ -94,6 +94,9 @@ input {
     font-size: 17px;
     font-family: sans-serif;
     margin-left: auto;
+    word-wrap: break-word; /* Перенос текста */
+    word-break: break-word; /* Разрыв длинных слов */
+    white-space: normal; 
 }
 
 .users-messages {

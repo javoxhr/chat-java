@@ -63,7 +63,7 @@
                     msg: msg,
                     sender: sender
                 }).then(() => {
-                    msgTxt.value = "";  // Clear input after sending
+                    msgTxt.value = "";
                 });
             }
         }
@@ -79,8 +79,7 @@
                 messageItem.classList.add('users-messages');
             }
             messagesList.appendChild(messageItem);
-
-            // Scroll to the latest message
+            
             messagesList.scrollTop = messagesList.scrollHeight;
         });
     </script>
