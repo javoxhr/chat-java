@@ -16,7 +16,7 @@
     <div id="messages">
         <div class="messages-wrapper">
             <ul id="messages-list">
-
+                <!-- Messages will be appended here -->
             </ul>
         </div>
     </div>
@@ -30,11 +30,11 @@
 
     <script src="./app.js"></script>
     <script>
-        window.module = {}
+        window.module = {};
     </script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getDatabase, ref, set, remove, onChildAdded, onChildRemoved } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        import { getDatabase, ref, set, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDst_ULdELAsmcDHnIdMbncdMOAqC-AWWw",
@@ -49,42 +49,40 @@
         const db = getDatabase(app);
 
         let msgTxt = document.getElementById('msgTxt');
+        let messagesList = document.getElementById('messages-list');
 
-        let sender;
-        if (sessionStorage.getItem('sender')) {
-            sender = sessionStorage.getItem('sender');
-        } else {
-            sender = prompt('PLEASE ENTER YOUR NAME');
-            sessionStorage.setItem('sender', sender);
-        }
-
+        let sender = sessionStorage.getItem('sender') || prompt('PLEASE ENTER YOUR NAME');
+        sessionStorage.setItem('sender', sender);
 
         window.module.sendMsg = function sendMsg() {
-            let msg = msgTxt.value;
+            let msg = msgTxt.value.trim();
             let timestamp = new Date().getTime();
 
             if (msg) {
                 set(ref(db, "messages/" + timestamp), {
                     msg: msg,
                     sender: sender
+                }).then(() => {
+                    msgTxt.value = "";  // Clear input after sending
                 });
             }
         }
 
-        const messagesList = document.querySelector('#messages-list')
-
         onChildAdded(ref(db, "messages"), (data) => {
-            let sender = sessionStorage.getItem('sender');
-            console.log(data.val().sender + ':' + data.val().msg)
-            messagesList.innerHTML += `<li id="messageText">${data.val().msg}</li>`
-            if (sender == data.val().sender) {
-                const messageText = document.querySelector('#messageText')
-                messageText.classList.add('users-messages')
-            }
-        })
+            const messageData = data.val();
+            const messageItem = document.createElement('li');
 
-        const messages = document.querySelector('#messages');
-        messages.scrollTop = messages.scrollHeight;
+            messageItem.textContent = `${messageData.sender}: ${messageData.msg}`;
+            if (messageData.sender === sender) {
+                messageItem.classList.remove('users-messages');
+            } else {
+                messageItem.classList.add('users-messages');
+            }
+            messagesList.appendChild(messageItem);
+
+            // Scroll to the latest message
+            messagesList.scrollTop = messagesList.scrollHeight;
+        });
     </script>
 </body>
 
